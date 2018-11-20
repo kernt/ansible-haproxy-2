@@ -53,7 +53,6 @@ Available variables are listed below, along with default values (see `defaults/m
 ```
   haproxy_frontends:
   - name: fe_http
-    mode: http
     binds:
     - "192.168.0.1:80"
     options:
@@ -75,7 +74,6 @@ Available variables are listed below, along with default values (see `defaults/m
 ```
   haproxy_backends:
   - name: be_http
-    mode: http
     stick: "on src table be_https"
     options:
     - httpchk
