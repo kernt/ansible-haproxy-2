@@ -112,9 +112,6 @@ frontend {{ frontend.name }}
     {{ setting }}
 {% endfor %}
 {% endif %}
-    http-request set-header X-Forwarded-Port %[dst_port]
-    http-request add-header X-Forwarded-Proto http if !{ ssl_fc }
-    http-request add-header X-Forwarded-Proto https if { ssl_fc }
 {% if 'backends' in frontend %}
 {% for backend in frontend.backends %}
     use_backend {{ backend }}

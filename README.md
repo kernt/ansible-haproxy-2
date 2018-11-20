@@ -86,9 +86,9 @@ haproxy_keepalived_vrrps:
   priority: 200			# The instance priority 1-255. For backups this must be lower than master's
   vips:	    			# List of VIPs and their netmasks and options
     - address: 192.168.0.1
-      mask: 24
+      mask: 32
     - address: 192.168.0.2
-      mask: 24
+      mask: 32
 ```
 
 ## Usage
