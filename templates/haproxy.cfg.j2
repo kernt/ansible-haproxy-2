@@ -107,6 +107,11 @@ frontend {{ frontend.name }}
     acl {{ acl }}
 {% endfor %}
 {% endif %}
+{% if 'settings' in frontend %}
+{% for setting in frontend.settings %}
+    {{ setting }}
+{% endfor %}
+{% endif %}
     http-request set-header X-Forwarded-Port %[dst_port]
     http-request add-header X-Forwarded-Proto http if !{ ssl_fc }
     http-request add-header X-Forwarded-Proto https if { ssl_fc }
@@ -148,6 +153,11 @@ backend {{ backend.name }}
 {% endif %}
 {% if 'cookie' in backend %}
     cookie {{ backend.cookie.name }} {% if 'options' in backend.cookie %} {{ backend.cookie.options }} {% endif %} 
+{% endif %}
+{% if 'settings' in backend %}
+{% for setting in backend.settings %}
+    {{ setting }}
+{% endfor %}
 {% endif %}
 {% for server in backend.servers %}
     server {{ server.name }} {{ server.address }} {% if 'options' in server %} {{ server.options }} {% endif %} 
