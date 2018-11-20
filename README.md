@@ -91,7 +91,7 @@ Available variables are listed below, along with default values (see `defaults/m
       address: "192.168.1.2:80"
       options: check
 
-  - name: be_ysa_https
+  - name: be_https
     mode: tcp
     stick_table: "type ip size 200k expire 30m"
     stick: on src
