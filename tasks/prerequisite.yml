@@ -5,14 +5,18 @@
     name: "{{ item }}"
     state: absent
   with_items:
-    - irqbalance
+  - irqbalance
+  tags:
+  - package
 
 - name: Ensure required packages are installed
   package:
     name: "{{ item }}"
     state: installed
   with_items:
-    - rsyslog
-    - logrotate
-    - socat
-    - firewalld
+  - rsyslog
+  - logrotate
+  - socat
+  - firewalld
+  tags:
+  - package

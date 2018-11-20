@@ -5,9 +5,13 @@
     msg: "HAProxy stats must be protected by login/pass credentials"
   when: haproxy_enable_stats|bool and (( haproxy_stats_username|trim == "" ) or ( haproxy_stats_password|trim == "" ))
   run_once: true
+  tags:
+  - validate
 
 - name: Make sure HAProxy VIP parameter is set when HA mode is enabled
   fail:
     msg: "HAProxy VIP address is required !"
   when: haproxy_enable_ha|bool and haproxy_keepalived_vrrps|trim == ""
   run_once: true
+  tags:
+  - validate

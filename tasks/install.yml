@@ -4,10 +4,13 @@
   package:
     name: haproxy
     state: installed
-  when: ansible_os_family == 'RedHat'
+  tags:
+  - package
 
 - name: Ensure Keepalived is installed
   package:
     name: keepalived
     state: installed
   when: haproxy_enable_ha|bool
+  tags:
+  - package

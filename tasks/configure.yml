@@ -9,18 +9,24 @@
   register: haproxy_version_result
   changed_when: false
   check_mode: no
+  tags:
+  - configure
 
 - name: Set HAProxy version
   set_fact:
     haproxy_version: "{{ '1.5' if haproxy_version_result.stdout | regex_search('^1.5.') else '1.4' }}"
+  tags:
+  - configure
 
 - name: Create HAProxy errorfiles and logging directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - /etc/haproxy/errors/
-    - /var/log/haproxy/
+  - /etc/haproxy/errors/
+  - /var/log/haproxy/
+  tags:
+  - configure
 
 - name: Extract HTML error files
   unarchive:
@@ -28,6 +34,8 @@
     dest: /etc/haproxy/errors/
     owner: root
     group: root
+  tags:
+  - configure
 
 - name: Disable HAProxy messages to be logged in '/var/log/messages'
   lineinfile:
@@ -35,12 +43,17 @@
     regexp: '^\*\.info\;mail\.none\;authpriv\.none\;cron\.none.*\/var\/log\/messages'
     line: '*.info;mail.none;authpriv.none;cron.none;local2.none    /var/log/messages'
   notify: restart rsyslog
+  tags:
+  - configure
 
 - name: Open firewall for Keepalived VRRP
   firewalld:
     rich_rule: 'rule protocol value="vrrp" accept'
     permanent: yes
     state: enabled
+  when: haproxy_enable_ha|bool
+  tags:
+  - configure
 
 - name: Setup sysctls for HAProxy tuning
   template:
@@ -48,6 +61,8 @@
     dest: '{{ haproxy_sysctl_file }}'
     mode: 0644
     validate: sysctl -p %s
+  tags:
+  - configure
 
 - name: Add rsyslog config for HAProxy
   template:
@@ -55,12 +70,16 @@
     dest: '{{ haproxy_rsyslog_file }}'
     mode: 0644
   notify: restart rsyslog
+  tags:
+  - configure
 
 - name: Enable HAProxy log rotation
   template:
     src: haproxy-logrotate.j2
     dest: '{{ haproxy_logrotate_file }}'
     mode: 0644
+  tags:
+  - configure
 
 - name: Copy HAProxy configuration
   template:
@@ -69,6 +88,8 @@
     mode: 0644
     validate: haproxy -f %s -c -q
   notify: restart haproxy
+  tags:
+  - configure
 
 #
 # Keepalived configuration
@@ -80,3 +101,5 @@
     dest: /etc/keepalived/keepalived.conf
   notify: restart keepalived
   when: haproxy_enable_ha|bool
+  tags:
+  - configure
