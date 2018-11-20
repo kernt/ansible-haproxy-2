@@ -48,14 +48,65 @@ Available variables are listed below, along with default values (see `defaults/m
   haproxy_backend_balance_method: 'roundrobin'
 ```
 
-- A list of backend servers (name and address) to which HAProxy will distribute requests (default: `[]`). Example:
+- A list of frontends which HAProxy will bind for servicing clients (default: `[]`). Example:
 
 ```
-  haproxy_backend_servers:
-    - name: srv-1
-      address: 192.168.0.1:80
-    - name: srv-2
-      address: 192.168.0.2:80
+  haproxy_frontends:
+  - name: fe_http
+    mode: http
+    binds:
+    - "192.168.0.1:80"
+    options:
+    - httplog
+    - forwardfor
+    - http-ignore-probes
+    default_backend: be_http
+
+  - name: fe_https
+    mode: tcp
+    binds:
+    - "192.168.0.1:443"
+    options:
+    - tcplog
+    default_backend: be_https
+```
+
+- A list of backends to which HAProxy will distribute requests (default: `[]`). Example:
+```
+  haproxy_backends:
+  - name: be_http
+    mode: http
+    stick: "on src table be_https"
+    options:
+    - httpchk
+    settings:
+    - http-check disable-on-404
+    - http-request set-header X-Forwarded-Port %[dst_port]
+    - http-request add-header X-Forwarded-Proto http
+    servers:
+    - name: srv01_http
+      address: "192.168.1.1:80"
+      options: check
+    - name: srv02_http
+      address: "192.168.1.2:80"
+      options: check
+
+  - name: be_ysa_https
+    mode: tcp
+    stick_table: "type ip size 200k expire 30m"
+    stick: on src
+    options:
+    - tcplog
+    - ssl-hello-chk
+    settings:
+    - http-request add-header X-Forwarded-Proto https
+    servers:
+    - name: srv01_https
+      address: "192.168.1.1:443"
+      options: check verify none
+    - name: srv02_https
+      address: "192.168.1.2:443"
+      options: check verify none
 ```
 
 - A list of extra global variables to add to the global configuration section inside `haproxy.cfg` (default: `[]`). Example:
@@ -85,8 +136,6 @@ haproxy_keepalived_vrrps:
   priority: 200			# The instance priority 1-255. For backups this must be lower than master's
   vips:	    			# List of VIPs and their netmasks and options
     - address: 192.168.0.1
-      mask: 32
-    - address: 192.168.0.2
       mask: 32
 ```
 
