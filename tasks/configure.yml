@@ -36,8 +36,21 @@
   firewalld:
     rich_rule: 'rule protocol value="vrrp" accept'
     permanent: yes
+    immediate: yes
     state: enabled
   when: haproxy_enable_ha|bool
+  tags:
+  - configure
+
+- name: Open firewall for web traffic
+  firewalld:
+    service: '{{ item }}'
+    permanent: yes
+    immediate: yes
+    state: enabled
+  with_items:
+  - http
+  - https
   tags:
   - configure
 
