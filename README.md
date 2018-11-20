@@ -75,7 +75,7 @@ Available variables are listed below, along with default values (see `defaults/m
 
 - **`haproxy_notification_email`**: E-mail address to send notifications to (default: `root`).
 
-- **`haproxy_notification_email_from`**: Sender e-mail address (default: Keepalived's default).
+- **`haproxy_notification_email_from`**: Sender e-mail address (default: `haproxy@fqdn`).
 
 - **`haproxy_enable_ha`**: Configure HA for HAProxy instances using Keepalived (default: `false`).
 
@@ -106,7 +106,7 @@ haproxy_keepalived_vrrps:
 ```
 
 You may manually need to allow setgid/setuid rights for keepalived due to lacking SELinux definitions for it:
-'''
+```
 module my-keepalived 1.0;
 
 require {
@@ -118,11 +118,13 @@ require {
 
 allow keepalived_t self:capability setgid;
 allow keepalived_t self:capability setuid;
-'''
+```
 ## License
 
 MIT
 
 ## Author Information
 
-This role was created by [Ahmed Bessifi](https://www.linkedin.com/in/abessifi), a DevOps enthusiast.
+This role was created by [Ahmed
+Bessifi](https://www.linkedin.com/in/abessifi), a DevOps enthusiast
+and further developed by Tom Söderlund.

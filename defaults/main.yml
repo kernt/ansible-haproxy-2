@@ -2,7 +2,7 @@
 
 # HAProxy Global settings
 haproxy_notification_email: root
-haproxy_notification_email_from: root
+haproxy_notification_email_from: haproxy@{{ ansible_fqdn }}
 haproxy_socket: /var/lib/haproxy/stats
 haproxy_chroot: /var/lib/haproxy
 haproxy_user: haproxy
