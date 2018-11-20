@@ -18,7 +18,9 @@ Available variables are listed below, along with default values (see `defaults/m
 
 ### HAProxy configuration
 
-- **`haproxy_socket`**: The socket through which HAProxy can communicate for admin purposes or statistics (default: `/var/lib/haproxy/stats`).
+- **`haproxy_processes`**: Number of HAProxy processes (default: `1`).
+
+- **`haproxy_socket`**: The socket through which HAProxy can communicate for admin purposes or statistics (default: `/var/lib/haproxy/stats`). It will be suffixed with a dash and HAProxy process ordinal number starting from `1`.
 
 - **`haproxy_chroot`**: The jail directory where chroot() will be performed before dropping privileges (default: `/var/lib/haproxy`).
 
@@ -29,7 +31,7 @@ Available variables are listed below, along with default values (see `defaults/m
     haproxy_group: haproxy
 ```
 
-- **`haproxy_enable_stats`**: HAProxy stats is disabled by default. To enable stats, set `haproxy_enable_stats` to `true` (default: `false`).
+- **`haproxy_enable_stats`**: HAProxy stats URL is disabled by default. To enable stats, set `haproxy_enable_stats` to `true` (default: `false`).
 
 - **`haproxy_stats_username / haproxy_stats_password`**: Stats access would be protected by login/pass. Set the role parameters to enforce authentication (default: empty).
 
@@ -71,17 +73,27 @@ Available variables are listed below, along with default values (see `defaults/m
 
 ### Keepalived configuration
 
+- **`haproxy_notification_email`**: E-mail address to send notifications to (default: `root`).
+
+- **`haproxy_notification_email_from`**: Sender e-mail address (default: Keepalived's default).
+
 - **`haproxy_enable_ha`**: Configure HA for HAProxy instances using Keepalived (default: `false`).
 
-- **`haproxy_keepalived_bind_interface`**: The interface to monitor by Keepalived (default: `eth0`).
+- **`haproxy_keepalived_vrrps`**: List of VRRPs for Keepalived (example below):
 
-- **`haproxy_keepalived_vip`**: The virtual IP address to configure by Keepalived (default: empty).
-
-- **`haproxy_keepalived_vrrp_name`**: A unique, by NIC, virtual instance name to configure by Keepalived (default: `VI_1`)
-
-- **`haproxy_keepalived_instance_state`**: The virtual instance type. Could be "MASTER|BACKUP|FAULT" (default: `MASTER`).
-
-- **`haproxy_keepalived_instance_priority`**: The instance priority. For backup instances this __MUST__ be lower that the priority value of the master instance (default of master: `200`).
+```
+haproxy_keepalived_vrrps:
+- name: "VI_1"			# A unique, by NIC, virtual instance name to configure by Keepalived
+  interface: "eth0"		# Interface to bind to
+  state: "MASTER"		# The virtual instance type. Could be "MASTER|BACKUP|FAULT"
+  router_id: 51			# Router ID for VRRP unique within interface context
+  priority: 200			# The instance priority 1-255. For backups this must be lower than master's
+  vips:	    			# List of VIPs and their netmasks and options
+    - address: 192.168.0.1
+      mask: 24
+    - address: 192.168.0.2
+      mask: 24
+```
 
 ## Usage
 
@@ -93,6 +105,20 @@ Available variables are listed below, along with default values (see `defaults/m
         - role: ansible-haproxy
 ```
 
+You may manually need to allow setgid/setuid rights for keepalived due to lacking SELinux definitions for it:
+'''
+module my-keepalived 1.0;
+
+require {
+        type keepalived_t;
+        class capability { setgid setuid };
+}
+
+#============= keepalived_t ==============
+
+allow keepalived_t self:capability setgid;
+allow keepalived_t self:capability setuid;
+'''
 ## License
 
 MIT

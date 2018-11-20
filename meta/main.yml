@@ -3,7 +3,7 @@
 dependencies: []
 
 galaxy_info:
-  author: Ahmed Bessifi
+  author: Ahmed Bessifi and Tom Söderlund
   description: HAProxy installation and configuration with Keepalived support.
   company: "EDELIA"
   license: "license MIT"
@@ -17,3 +17,6 @@ galaxy_info:
     - web
     - networking
     - reverse-proxy
+    - ha
+    - haproxy
+    - keepalived

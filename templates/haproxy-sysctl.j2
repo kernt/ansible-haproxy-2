@@ -1,0 +1,12 @@
+{{ ansible_managed | comment }}
+
+net.core.somaxconn = 65534
+net.core.netdev_max_backlog = 100000
+net.ipv4.ip_nonlocal_bind = 1
+net.ipv4.ip_local_port_range = "1025 65534"
+net.ipv4.tcp_max_syn_backlog = 100000
+net.ipv4.tcp_rmem = "4096 16060 64060"
+net.ipv4.tcp_wmem = "4097 16384 262144"
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_no_metrics_save = 0
+net.netfilter.nf_conntrack_max = 131072

@@ -1,20 +1,27 @@
 {{ ansible_managed | comment }}
 
-#
 # Global configuration
-#
 
 global
-  log /dev/log  local2 info alert   # For access logs
-  log /dev/log  local2 notice alert # For backend, loadbalancer logs
+  log /dev/log local2 info alert   # For access logs
+  log /dev/log local2 notice alert # For backend, loadbalancer logs
+  pidfile /var/run/haproxy.pid
+  node {{ haproxy_node }}
 {% if haproxy_socket != '' %}
-  stats socket {{ haproxy_socket }} level admin
+{% for process in range(0, haproxy_processes) %}
+  stats socket {{ haproxy_socket }}-{{ loop.index }} level admin mode 660 process {{ loop.index }}
+{% endfor %}
+  stats timeout 2m
 {% endif %}
 {% if haproxy_chroot != '' %}
   chroot {{ haproxy_chroot }}
 {% endif %}
   user {{ haproxy_user }}
   group {{ haproxy_group }}
+  nbproc {{ haproxy_processes }}
+{% for process in range(0, haproxy_processes) %}
+  cpu-map {{ loop.index }} {{ loop.index }}
+{% endfor %}
   daemon
 {% for global_var in haproxy_extra_global_vars %}
   {{ global_var }}
@@ -26,17 +33,24 @@ global
 
 defaults
   log global
-  mode  http
-  option  httplog
-  option  dontlognull
+  mode http
+  option dontlognull
+  option httpclose
+  option httpchk
+  option redispatch
 {% if haproxy_version == '1.4' %}
   contimeout 5000
-  clitimeout 50000
-  srvtimeout 50000
+  clitimeout 20000
+  srvtimeout 30000
 {% else %}
-  timeout connect 5000
-  timeout client 50000
-  timeout server 50000
+  timeout connect 5s
+  timeout client 20s
+  timeout server 30s
+  timeout http-request 10s
+  timeout http-keep-alive 4s
+  timeout tunnel 2m
+  timeout client-fin 1s
+  timeout server-fin 1s
   maxconn 3000
 {% endif %}
   # Custom http error files
@@ -51,12 +65,12 @@ defaults
   # errorfile 520 /etc/haproxy/errors/HTTP520.html
   # errorfile 521 /etc/haproxy/errors/HTTP521.html
   # errorfile 533 /etc/haproxy/errors/HTTP533.html
+{% if haproxy_enable_stats %}
 
 #
 # Stats configuration
 #
 
-{% if haproxy_enable_stats %}
 listen stats :{{ haproxy_stats_port }}
   mode http
   monitor-uri /healthz
@@ -70,12 +84,15 @@ listen stats :{{ haproxy_stats_port }}
 #
 # Frontends configuration
 #
-
 {% for frontend in haproxy_frontends %}
-frontend  {{ frontend.name }}
+
+frontend {{ frontend.name }}
 {% for bind in frontend.binds %}
     bind {{ bind }}
 {% endfor %}
+{% if 'process' in frontend %}
+    bind-process {{ frontend.process }}
+{% endif %}
 {% if 'mode' in frontend %}
     mode {{ frontend.mode }}
 {% endif %}
@@ -89,21 +106,50 @@ frontend  {{ frontend.name }}
     redirect {{ redirect }}
 {% endfor %}
 {% endif %}
-    default_backend {{ frontend.default_backend }}
+{% if 'acls' in frontend %}
+{% for acl in frontend.acls %}
+    acl {{ acl }}
 {% endfor %}
-
+{% endif %}
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto http if !{ ssl_fc }
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+{% if 'backends' in frontend %}
+{% for backend in frontend.backends %}
+    use_backend {{ backend }}
+{% endfor %}
+{% endif %}
+{% if 'default_backend' in frontend %}
+    default_backend {{ frontend.default_backend }}
+{% endif %}
+{% endfor %}
 {% for backend in haproxy_backends %}
+
 backend {{ backend.name }}
+{% if 'process' in backend %}
+    bind-process {{ backend.process }}
+{% endif %}
 {% if 'mode' in backend %}
     mode {{ backend.mode }}
 {% endif %}
+{% if 'balance' in backend %}
     balance {{ backend.balance }}
+{% endif %}
+{% if 'stick_table' in backend %}
+    stick-table {{ backend.stick_table }}
+{% endif %}
+{% if 'stick' in backend %}
+    stick {{ backend.stick }}
+{% endif %}
 {% if 'options' in backend %}
 {% for option in backend.options %}
     option {{ option }}
 {% endfor %}
 {% endif %}
+{% if 'cookie' in backend %}
+    cookie {{ backend.cookie.name }} {% if 'options' in backend.cookie %} {{ backend.cookie.options }} {% endif %} 
+{% endif %}
 {% for server in backend.servers %}
-    server      {{ server.name }} {{ server.address }} {{ server.opts }}
+    server {{ server.name }} {{ server.address }} {% if 'options' in server %} {{ server.options }} {% endif %} 
 {% endfor %}
 {% endfor %}
