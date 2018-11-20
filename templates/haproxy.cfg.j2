@@ -134,6 +134,8 @@ backend {{ backend.name }}
 {% endif %}
 {% if 'balance' in backend %}
     balance {{ backend.balance }}
+{% else %}
+    balance {{ haproxy_backend_balance_method }}
 {% endif %}
 {% if 'stick_table' in backend %}
     stick-table {{ backend.stick_table }}

@@ -3,6 +3,7 @@
 # HAProxy Global settings
 haproxy_notification_email: root
 haproxy_notification_email_from: haproxy@{{ ansible_fqdn }}
+haproxy_backend_balance_method: roundrobin
 haproxy_socket: /var/lib/haproxy/stats
 haproxy_chroot: /var/lib/haproxy
 haproxy_user: haproxy
