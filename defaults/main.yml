@@ -3,6 +3,8 @@
 # HAProxy Global settings
 haproxy_notification_email: root
 haproxy_notification_email_from: haproxy@{{ ansible_fqdn }}
+haproxy_frontend_mode: http
+haproxy_backend_mode: http
 haproxy_backend_balance_method: roundrobin
 haproxy_socket: /var/lib/haproxy/stats
 haproxy_chroot: /var/lib/haproxy
@@ -10,6 +12,10 @@ haproxy_user: haproxy
 haproxy_group: haproxy
 haproxy_extra_global_vars: []
 haproxy_node: '{{ ansible_hostname }}'
+haproxy_processes: 1
+haproxy_sysctl_file: /etc/sysctl.d/z0-haproxy.conf
+haproxy_rsyslog_file: /etc/rsyslog.d/haproxy.conf
+haproxy_logrotate_file: /etc/logrotate.d/haproxy
 
 # HAProxy Stats configuration
 haproxy_enable_stats: false
@@ -35,15 +41,17 @@ haproxy_backends:
     address: '127.0.0.1:{{ haproxy_stats_port }}'
     options: check
 
-haproxy_processes: 1
-haproxy_sysctl_file: /etc/sysctl.d/z0-haproxy.conf
-haproxy_rsyslog_file: /etc/rsyslog.d/haproxy.conf
-haproxy_logrotate_file: /etc/logrotate.d/haproxy
-
 # Keepalived configuration
 haproxy_enable_ha: false
 haproxy_keepalived_vrrps:
 - name: "VI_1"
-  interface: "eth0"
+  interface: "lo"
   state: "BACKUP"
   router_id: 51
+  peers:
+    - x.y.z.1
+    - x.y.z.2
+  vips:
+    - x.y.z.3
+    - x.y.z.4
+    - x.y.z.5

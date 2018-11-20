@@ -4,20 +4,6 @@
 # HAProxy configuration
 #
 
-- name: Get HAProxy version
-  shell: "haproxy -v | awk 'NR==1 {print $3}'"
-  register: haproxy_version_result
-  changed_when: false
-  check_mode: no
-  tags:
-  - configure
-
-- name: Set HAProxy version
-  set_fact:
-    haproxy_version: "{{ '1.5' if haproxy_version_result.stdout | regex_search('^1.5.') else '1.4' }}"
-  tags:
-  - configure
-
 - name: Create HAProxy errorfiles and logging directories
   file:
     path: "{{ item }}"

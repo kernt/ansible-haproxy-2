@@ -38,11 +38,6 @@ defaults
   option httpclose
   option httpchk
   option redispatch
-{% if haproxy_version == '1.4' %}
-  contimeout 5000
-  clitimeout 20000
-  srvtimeout 30000
-{% else %}
   timeout connect 5s
   timeout client 20s
   timeout server 30s
@@ -52,7 +47,6 @@ defaults
   timeout client-fin 1s
   timeout server-fin 1s
   maxconn 3000
-{% endif %}
   # Custom http error files
   errorfile 400 /etc/haproxy/errors/HTTP400.html
   # errorfile 401 /etc/haproxy/errors/HTTP401.html
@@ -95,6 +89,8 @@ frontend {{ frontend.name }}
 {% endif %}
 {% if 'mode' in frontend %}
     mode {{ frontend.mode }}
+{% else %}
+    mode {{ haproxy_frontend_mode }}
 {% endif %}
 {% if 'options' in frontend %}
 {% for option in frontend.options %}
@@ -131,6 +127,8 @@ backend {{ backend.name }}
 {% endif %}
 {% if 'mode' in backend %}
     mode {{ backend.mode }}
+{% else %}
+   mode {{ haproxy_backend_mode }}
 {% endif %}
 {% if 'balance' in backend %}
     balance {{ backend.balance }}

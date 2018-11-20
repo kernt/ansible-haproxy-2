@@ -2,7 +2,7 @@
 
 Installs HAProxy on RedHat/CentOS GNU/Linux servers with high availability support.
 
-**Note**: This role supports HAProxy versions `1.4` or `1.5`. Future versions may require some rework.
+**Note**: This role supports HAProxy version `1.5`. Future versions may require some rework.
 
 ## Requirements
 
@@ -38,16 +38,12 @@ Available variables are listed below, along with default values (see `defaults/m
 - Default HAProxy frontend configuration directives:
 
 ```
-  haproxy_frontend_name: 'hafrontend'
-  haproxy_frontend_bind_address: '*'
-  haproxy_frontend_port: 80
   haproxy_frontend_mode: 'http'
 ```
 
 - Default HAProxy backend configuration directives:
 
 ```
-  haproxy_backend_name: 'habackend'
   haproxy_backend_mode: 'http'
   haproxy_backend_balance_method: 'roundrobin'
   haproxy_backend_httpchk: 'HEAD / HTTP/1.1\r\nHost:localhost'
