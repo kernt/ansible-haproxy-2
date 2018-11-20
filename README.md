@@ -46,7 +46,7 @@ Available variables are listed below, along with default values (see `defaults/m
 ```
   haproxy_backend_mode: 'http'
   haproxy_backend_balance_method: 'roundrobin'
-  haproxy_backend_httpchk: 'HEAD / HTTP/1.1\r\nHost:localhost'
+  haproxy_backend_httpchk: 'HEAD / HTTP/1.1\r\nHost:\{\{ ansible_fqdn \}\}'
 ```
 
 - A list of backend servers (name and address) to which HAProxy will distribute requests (default: `[]`). Example:
