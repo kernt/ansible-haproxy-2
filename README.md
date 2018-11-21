@@ -133,18 +133,18 @@ haproxy_keepalived_vrrps:
   router_id: 51			# Router ID for VRRP unique within interface context
   priority: 200			# The instance priority 1-255. For backups this must be lower than master's
   vips:	    			# List of VIPs and their netmasks and options
-    - address: 192.168.0.1
-      mask: 32
+  - address: 192.168.0.1
+    mask: 32
 ```
 
 ## Usage
 
 ```yaml
 
-    - hosts: balancer
-      become: yes
-      roles:
-        - role: ansible-haproxy
+- hosts: balancer
+  become: yes
+  roles:
+  - role: ansible-haproxy
 ```
 
 You may manually need to allow setgid/setuid rights for keepalived due to lacking SELinux definitions for it:
@@ -152,8 +152,8 @@ You may manually need to allow setgid/setuid rights for keepalived due to lackin
 module my-keepalived 1.0;
 
 require {
-        type keepalived_t;
-        class capability { setgid setuid };
+  type keepalived_t;
+  class capability { setgid setuid };
 }
 
 #============= keepalived_t ==============
