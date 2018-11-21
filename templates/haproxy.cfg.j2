@@ -1,30 +1,32 @@
 {{ ansible_managed | comment }}
 
+#
 # Global configuration
+#
 
 global
-  log /dev/log local2 info alert   # For access logs
-  log /dev/log local2 notice alert # For backend, loadbalancer logs
-  pidfile /var/run/haproxy.pid
-  node {{ haproxy_node }}
+   log /dev/log local2 info alert   # For access logs
+   log /dev/log local2 notice alert # For backend, loadbalancer logs
+   pidfile /var/run/haproxy.pid
+   node {{ haproxy_node }}
 {% if haproxy_socket != '' %}
 {% for process in range(0, haproxy_processes) %}
-  stats socket {{ haproxy_socket }}-{{ loop.index }} level admin mode 660 process {{ loop.index }}
+   stats socket {{ haproxy_socket }}-{{ loop.index }} level admin mode 660 process {{ loop.index }}
 {% endfor %}
-  stats timeout 2m
+   stats timeout 2m
 {% endif %}
 {% if haproxy_chroot != '' %}
-  chroot {{ haproxy_chroot }}
+   chroot {{ haproxy_chroot }}
 {% endif %}
-  user {{ haproxy_user }}
-  group {{ haproxy_group }}
-  nbproc {{ haproxy_processes }}
+   user {{ haproxy_user }}
+   group {{ haproxy_group }}
+   nbproc {{ haproxy_processes }}
 {% for process in range(0, haproxy_processes) %}
-  cpu-map {{ loop.index }} {{ loop.index }}
+   cpu-map {{ loop.index }} {{ loop.index }}
 {% endfor %}
-  daemon
+   daemon
 {% for global_var in haproxy_extra_global_vars %}
-  {{ global_var }}
+   {{ global_var }}
 {% endfor %}
 
 #
@@ -32,33 +34,33 @@ global
 #
 
 defaults
-  log global
-  mode http
-  option dontlognull
-  option httpclose
-  option httpchk
-  option redispatch
-  timeout connect 5s
-  timeout client 20s
-  timeout server 30s
-  timeout http-request 10s
-  timeout http-keep-alive 4s
-  timeout tunnel 2m
-  timeout client-fin 1s
-  timeout server-fin 1s
-  maxconn 3000
-  # Custom http error files
-  errorfile 400 /etc/haproxy/errors/HTTP400.html
-  # errorfile 401 /etc/haproxy/errors/HTTP401.html
-  errorfile 403 /etc/haproxy/errors/HTTP403.html
-  # errorfile 404 /etc/haproxy/errors/HTTP404.html
-  errorfile 500 /etc/haproxy/errors/HTTP500.html
-  # errorfile 501 /etc/haproxy/errors/HTTP501.html
-  errorfile 502 /etc/haproxy/errors/HTTP502.html
-  errorfile 503 /etc/haproxy/errors/HTTP503.html
-  # errorfile 520 /etc/haproxy/errors/HTTP520.html
-  # errorfile 521 /etc/haproxy/errors/HTTP521.html
-  # errorfile 533 /etc/haproxy/errors/HTTP533.html
+   log global
+   mode http
+   option dontlognull
+   option httpclose
+   option httpchk
+   option redispatch
+   timeout connect 5s
+   timeout client 20s
+   timeout server 30s
+   timeout http-request 10s
+   timeout http-keep-alive 4s
+   timeout tunnel 2m
+   timeout client-fin 1s
+   timeout server-fin 1s
+   maxconn 3000
+   # Custom http error files
+   errorfile 400 /etc/haproxy/errors/HTTP400.html
+   # errorfile 401 /etc/haproxy/errors/HTTP401.html
+   errorfile 403 /etc/haproxy/errors/HTTP403.html
+   # errorfile 404 /etc/haproxy/errors/HTTP404.html
+   errorfile 500 /etc/haproxy/errors/HTTP500.html
+   # errorfile 501 /etc/haproxy/errors/HTTP501.html
+   errorfile 502 /etc/haproxy/errors/HTTP502.html
+   errorfile 503 /etc/haproxy/errors/HTTP503.html
+   # errorfile 520 /etc/haproxy/errors/HTTP520.html
+   # errorfile 521 /etc/haproxy/errors/HTTP521.html
+   # errorfile 533 /etc/haproxy/errors/HTTP533.html
 {% if haproxy_enable_stats %}
 
 #
@@ -66,13 +68,13 @@ defaults
 #
 
 listen stats :{{ haproxy_stats_port }}
-  mode http
-  monitor-uri /healthz
-  stats enable
-  stats hide-version
-  stats realm Haproxy\ Statistics
-  stats uri /
-  stats auth {{ haproxy_stats_username }}:{{ haproxy_stats_password }}
+   mode http
+   monitor-uri /healthz
+   stats enable
+   stats hide-version
+   stats realm Haproxy\ Statistics
+   stats uri /
+   stats auth {{ haproxy_stats_username }}:{{ haproxy_stats_password }}
 {% endif %}
 
 #
@@ -82,81 +84,85 @@ listen stats :{{ haproxy_stats_port }}
 
 frontend {{ frontend.name }}
 {% for bind in frontend.binds %}
-    bind {{ bind }}
+   bind {{ bind }}
 {% endfor %}
 {% if 'process' in frontend %}
-    bind-process {{ frontend.process }}
+   bind-process {{ frontend.process }}
 {% endif %}
 {% if 'mode' in frontend %}
-    mode {{ frontend.mode }}
+   mode {{ frontend.mode }}
 {% else %}
-    mode {{ haproxy_frontend_mode }}
+   mode {{ haproxy_frontend_mode }}
 {% endif %}
 {% if 'options' in frontend %}
 {% for option in frontend.options %}
-    option {{ option }}
+   option {{ option }}
 {% endfor %}
 {% endif %}
 {% if 'redirects' in frontend %}
 {% for redirect in frontend.redirects %}
-    redirect {{ redirect }}
+   redirect {{ redirect }}
 {% endfor %}
 {% endif %}
 {% if 'acls' in frontend %}
 {% for acl in frontend.acls %}
-    acl {{ acl }}
+   acl {{ acl }}
 {% endfor %}
 {% endif %}
 {% if 'settings' in frontend %}
 {% for setting in frontend.settings %}
-    {{ setting }}
+   {{ setting }}
 {% endfor %}
 {% endif %}
 {% if 'backends' in frontend %}
 {% for backend in frontend.backends %}
-    use_backend {{ backend }}
+   use_backend {{ backend }}
 {% endfor %}
 {% endif %}
 {% if 'default_backend' in frontend %}
-    default_backend {{ frontend.default_backend }}
+   default_backend {{ frontend.default_backend }}
 {% endif %}
 {% endfor %}
+
+#
+# Backends configuration
+#
 {% for backend in haproxy_backends %}
 
 backend {{ backend.name }}
 {% if 'process' in backend %}
-    bind-process {{ backend.process }}
+   bind-process {{ backend.process }}
 {% endif %}
 {% if 'mode' in backend %}
-    mode {{ backend.mode }}
+   mode {{ backend.mode }}
 {% else %}
    mode {{ haproxy_backend_mode }}
 {% endif %}
 {% if 'balance' in backend %}
-    balance {{ backend.balance }}
+   balance {{ backend.balance }}
 {% else %}
-    balance {{ haproxy_backend_balance_method }}
+   balance {{ haproxy_backend_balance_method }}
 {% endif %}
 {% if 'stick_table' in backend %}
-    stick-table {{ backend.stick_table }}
+   stick-table {{ backend.stick_table }}
 {% endif %}
 {% if 'stick' in backend %}
-    stick {{ backend.stick }}
+   stick {{ backend.stick }}
 {% endif %}
 {% if 'options' in backend %}
 {% for option in backend.options %}
-    option {{ option }}
+   option {{ option }}
 {% endfor %}
 {% endif %}
 {% if 'cookie' in backend %}
-    cookie {{ backend.cookie.name }} {% if 'options' in backend.cookie %} {{ backend.cookie.options }} {% endif %} 
+   cookie {{ backend.cookie.name }} {% if 'options' in backend.cookie %} {{ backend.cookie.options }} {% endif %} 
 {% endif %}
 {% if 'settings' in backend %}
 {% for setting in backend.settings %}
-    {{ setting }}
+   {{ setting }}
 {% endfor %}
 {% endif %}
 {% for server in backend.servers %}
-    server {{ server.name }} {{ server.address }} {% if 'options' in server %} {{ server.options }} {% endif %} 
+   server {{ server.name }} {{ server.address }} {% if 'options' in server %} {{ server.options }} {% endif %} 
 {% endfor %}
 {% endfor %}

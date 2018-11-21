@@ -1,57 +1,69 @@
 {{ ansible_managed | comment }}
 
+#
+# Global definitions
+#
+
 global_defs {
 {% if haproxy_notification_email %}
-    notification_email {
-      {{ haproxy_notification_email }}
-    }
+   notification_email {
+     {{ haproxy_notification_email }}
+   }
 {% if haproxy_notification_email_from %}
-    notification_email_from {{ haproxy_notification_email_from }}
+   notification_email_from {{ haproxy_notification_email_from }}
 {% endif %}
-    smtp_server localhost
-    smtp_connect_timeout 30
+   smtp_server localhost
+   smtp_connect_timeout 30
 {% endif %}
-    enable_script_security
-    script_user {{ haproxy_user }}
+   enable_script_security
+   script_user {{ haproxy_user }}
 }
 
+#
+# VRRP Check Scripts
+#
+
 vrrp_script chk_haproxy {
-    script "/usr/bin/killall -0 haproxy"
-    interval 2
+   script "/usr/bin/killall -0 haproxy"
+   interval 2
 }
+
+#
+# VRRP Instances
+#
 {% for instance in haproxy_keepalived_vrrps %}
 
 vrrp_instance {{ instance.name }} {
-    interface {{ instance.interface }}
+   interface {{ instance.interface }}
 {% if 'state' in instance %}
-    state {{ instance.state|upper }}
+   state {{ instance.state|upper }}
 {% endif %}
-    virtual_router_id {{ instance.router_id }}
+   virtual_router_id {{ instance.router_id }}
 {% if 'priority' in instance %}
-    priority {{ instance.priority }}
+   priority {{ instance.priority }}
 {% endif %}
-    preempt_delay 300
+   preempt_delay 300
 {% if 'advert_int' in instance %}
-    advert_int {{ instance.advert_int }}
+   advert_int {{ instance.advert_int }}
 {% endif %}
 {% if 'peers' in instance %}
-    unicast_peer {
+   unicast_peer {
 {% for peer in instance.peers if not peer.address in ansible_all_ipv4_addresses %}
-      {{ peer.address }} {% if 'options' in peer %} {{ peer.options }} {% endif %} 
+     {{ peer.address }} {% if 'options' in peer %} {{ peer.options }} {% endif %} 
 {% endfor %}
-    }
+   }
 {% endif %}
-    authentication {
-      auth_type PASS
-      auth_pass {{ instance.name|hash('md5') }}
-    }
-    virtual_ipaddress {
+   authentication {
+     auth_type PASS
+     auth_pass {{ instance.name|hash('md5') }}
+   }
+   virtual_ipaddress {
 {% for vip in instance.vips %}
-      {{ vip.address }} {% if 'options' in vip %} {{ vip.options }} {% endif %} 
+     {{ vip.address }} {% if 'options' in vip %} {{ vip.options }} {% endif %} 
 {% endfor %}
-    }
-    track_script {
-      chk_haproxy
-    }
+   }
+   track_script {
+     chk_haproxy
+   }
 }
 {% endfor %}
