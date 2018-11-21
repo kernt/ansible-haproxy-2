@@ -35,20 +35,13 @@ Available variables are listed below, along with default values (see `defaults/m
 
 - **`haproxy_stats_username / haproxy_stats_password`**: Stats access would be protected by login/pass. Set the role parameters to enforce authentication (default: empty).
 
-- Default HAProxy frontend configuration directives:
+- **`haproxy_frontend_mode`**: Default HAProxy frontend mode (default: `http`)
 
-```
-  haproxy_frontend_mode: 'http'
-```
+- **`haproxy_backend_mode`**: Default HAProxy backend mode (default: `http`)
 
-- Default HAProxy backend configuration directives:
+- **`haproxy_backend_balance_method`**: Default backend balance method (default: `roundrobin`)
 
-```
-  haproxy_backend_mode: 'http'
-  haproxy_backend_balance_method: 'roundrobin'
-```
-
-- A list of frontends which HAProxy will bind for servicing clients (default: `[]`). Example:
+- **`haproxy_frontends`**: A list of frontends which HAProxy will bind for servicing clients (default: `[]`). Example:
 
 ```
   haproxy_frontends:
@@ -70,7 +63,7 @@ Available variables are listed below, along with default values (see `defaults/m
     default_backend: be_https
 ```
 
-- A list of backends to which HAProxy will distribute requests (default: `[]`). Example:
+- **`haproxy_backends`**: A list of backends to which HAProxy will distribute requests (default: `[]`). Example:
 ```
   haproxy_backends:
   - name: be_http
@@ -107,7 +100,7 @@ Available variables are listed below, along with default values (see `defaults/m
       options: check verify none
 ```
 
-- A list of extra global variables to add to the global configuration section inside `haproxy.cfg` (default: `[]`). Example:
+- **`haproxy_extra_global_vars`**: A list of extra global variables to add to the global configuration section inside `haproxy.cfg` (default: `[]`). Example:
 
 ```
   haproxy_extra_global_vars:
