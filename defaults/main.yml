@@ -16,6 +16,11 @@ haproxy_processes: 1
 haproxy_sysctl_file: /etc/sysctl.d/z0-haproxy.conf
 haproxy_rsyslog_file: /etc/rsyslog.d/haproxy.conf
 haproxy_logrotate_file: /etc/logrotate.d/haproxy
+haproxy_bind_options: no-sslv3 no-tls-tickets
+haproxy_bind_ciphers: ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+haproxy_server_options: no-sslv3
+haproxy_server_ciphers: ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+haproxy_dh_param: 2048
 
 # HAProxy Stats configuration
 haproxy_enable_stats: false

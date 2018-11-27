@@ -18,6 +18,16 @@ Available variables are listed below, along with default values (see `defaults/m
 
 ### HAProxy configuration
 
+- **`haproxy_extra_global_vars`**: A list of extra global variables to add to the global configuration section inside `haproxy.cfg` (default: `[]`).
+
+- **`haproxy_bind_options`**: Argument to ssl-default-bind-options in the global configuration section (default: `no-sslv3 no-tls-tickets`)
+
+- **`haproxy_bind_ciphers`**: Argument to ssl-default-bind-ciphers in the global configuration section (default: `ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS`)
+
+- **`haproxy_server_options`**: Argument to ssl-default-server-options in the global configuration section (default: `no-sslv3`)
+
+- **`haproxy_server_ciphers`**: Argument to ssl-default-server-ciphers in the global configuration section (default: `ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS`)
+
 - **`haproxy_processes`**: Number of HAProxy processes (default: `1`).
 
 - **`haproxy_socket`**: The socket through which HAProxy can communicate for admin purposes or statistics (default: `/var/lib/haproxy/stats`). It will be suffixed with a dash and HAProxy process ordinal number starting from `1`.
@@ -98,14 +108,6 @@ Available variables are listed below, along with default values (see `defaults/m
     - name: srv02_https
       address: "192.168.1.2:443"
       options: check verify none
-```
-
-- **`haproxy_extra_global_vars`**: A list of extra global variables to add to the global configuration section inside `haproxy.cfg` (default: `[]`). Example:
-
-```
-  haproxy_extra_global_vars:
-    - 'ssl-default-bind-ciphers ABCD+KLMJ:...'
-    - 'ssl-default-bind-options no-sslv3'
 ```
 
 ### Keepalived configuration
