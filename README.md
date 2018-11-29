@@ -137,6 +137,7 @@ haproxy_keepalived_vrrps:
 ```yaml
 
 - hosts: balancer
+  serial: "50%"
   become: yes
   roles:
   - role: ansible-haproxy
