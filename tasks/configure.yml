@@ -54,6 +54,14 @@
   tags:
   - configure
 
+- name: Allow HAProxy to bind to any port
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+  tags:
+  - configure
+
 - name: Setup sysctls for HAProxy tuning
   template:
     src: haproxy-sysctl.j2
