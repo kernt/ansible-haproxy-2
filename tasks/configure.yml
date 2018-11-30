@@ -51,9 +51,9 @@
 - name: Configure HAProxy service for firewalld
   template:
     src: haproxy-firewalld.j2
-    dest: {{ haproxy_firewalld_file }}
+    dest: '{{ haproxy_firewalld_file }}'
     mode: 0644
-  validate: firewall-offline-cmd --new-service-from-file={{ haproxy_firewalld_file }} --name={{ haproxy_firewalld_name }}
+  validate: firewall-offline-cmd --new-service-from-file='{{ haproxy_firewalld_file }}' --name='{{ haproxy_firewalld_name }}'
   notify: restart firewalld
   tags:
   - configure
