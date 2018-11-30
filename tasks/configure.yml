@@ -49,14 +49,14 @@
   tags:
   - configure
 
-- name: Force reload of firewalld if necessary
+- name: Force reload of firewalld if necessary to make new service available
   meta: flush_handlers
   tags:
   - configure
 
 - name: Open firewall for incoming HAProxy traffic
   firewalld:
-    service: haproxy
+    service: '{{ haproxy_firewalld_name }}'
     permanent: yes
     immediate: yes
     state: enabled
