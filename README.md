@@ -43,6 +43,8 @@ Available variables are listed below, along with default values (see `defaults/m
 
 - **`haproxy_enable_stats`**: HAProxy stats URL is disabled by default. To enable stats, set `haproxy_enable_stats` to `true` (default: `false`).
 
+- **`haproxy_stats_port`**: HAProxy stats port to listen to (default: `1936`).
+
 - **`haproxy_stats_username / haproxy_stats_password`**: Stats access would be protected by login/pass. Set the role parameters to enforce authentication (default: empty).
 
 - **`haproxy_frontend_mode`**: Default HAProxy frontend mode (default: `http`)
