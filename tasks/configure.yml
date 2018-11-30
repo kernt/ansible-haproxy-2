@@ -52,6 +52,7 @@
   template:
     src: haproxy-firewalld.j2
     dest: '{{ haproxy_firewalld_file }}'
+    backup: yes
     mode: 0644
     validate: firewall-offline-cmd --new-service-from-file='{{ haproxy_firewalld_file }}' --name='{{ haproxy_firewalld_name }}'
   notify: reload firewalld
@@ -79,6 +80,7 @@
   template:
     src: haproxy-sysctl.j2
     dest: '{{ haproxy_sysctl_file }}'
+    backup: yes
     mode: 0644
     validate: sysctl -p %s
   tags:
@@ -88,6 +90,7 @@
   template:
     src: haproxy-rsyslog.j2
     dest: '{{ haproxy_rsyslog_file }}'
+    backup: yes
     mode: 0644
   notify: restart rsyslog
   tags:
@@ -105,6 +108,7 @@
   template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
+    backup: yes
     mode: 0644
     validate: haproxy -f %s -c -q
   notify: restart haproxy
@@ -119,6 +123,7 @@
   template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
+    backup: yes
   notify: restart keepalived
   when: haproxy_enable_ha|bool
   tags:
