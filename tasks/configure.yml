@@ -54,7 +54,6 @@
     dest: '{{ haproxy_firewalld_file }}'
     backup: yes
     mode: 0644
-    validate: firewall-offline-cmd --new-service-from-file='{{ haproxy_firewalld_file }}' --name='{{ haproxy_firewalld_name }}'
   notify: reload firewalld
   tags:
   - configure
