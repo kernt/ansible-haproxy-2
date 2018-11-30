@@ -4,7 +4,7 @@
 -->
 <service>
   <short>TCP/HTTP proxy and load balancer for high availability (HAProxy)</short>
-  <description>HAProxy is a TCP/HTTP reverse proxy which is particularly suite for high availability environments.</description>
+  <description>HAProxy is a TCP/HTTP reverse proxy suited for high availability environments.</description>
 {% for port in haproxy_tcp_ports %}
   <port protocol="tcp" port="{{ port }}"/>
 {% endfor %}
