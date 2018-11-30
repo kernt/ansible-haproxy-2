@@ -23,15 +23,6 @@
   tags:
   - configure
 
-- name: Disable HAProxy messages to be logged in '/var/log/messages'
-  lineinfile:
-    path: /etc/rsyslog.conf
-    regexp: '^\*\.info\;mail\.none\;authpriv\.none\;cron\.none.*\/var\/log\/messages'
-    line: '*.info;mail.none;authpriv.none;cron.none;local2.none    /var/log/messages'
-  notify: restart rsyslog
-  tags:
-  - configure
-
 - name: Open firewall for Keepalived VRRP
   firewalld:
     rich_rule: 'rule protocol value="vrrp" accept'
@@ -58,12 +49,26 @@
   tags:
   - configure
 
+- name: Force reload of firewalld if necessary
+  meta: flush_handlers
+  tags:
+  - configure
+
 - name: Open firewall for incoming HAProxy traffic
   firewalld:
     service: haproxy
     permanent: yes
     immediate: yes
     state: enabled
+  tags:
+  - configure
+
+- name: Disable HAProxy messages to be logged in '/var/log/messages'
+  lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: '^\*\.info\;mail\.none\;authpriv\.none\;cron\.none.*\/var\/log\/messages'
+    line: '*.info;mail.none;authpriv.none;cron.none;local2.none    /var/log/messages'
+  notify: restart rsyslog
   tags:
   - configure
 
