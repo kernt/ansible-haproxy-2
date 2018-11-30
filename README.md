@@ -18,6 +18,16 @@ Available variables are listed below, along with default values (see `defaults/m
 
 ### HAProxy configuration
 
+- **`haproxy_firewalld_name`**: Name of automatically generated service for firewalld (default: `haproxy`)
+
+- **`haproxy_firewalld_file`**: Name of automatically generated temporary XML file to create HAProxy service for firewalld (default: `{{ haproxy_firewalld_name }}.xml`)
+
+- **`haproxy_sysctl_file`**: Name of automatically generated sysctl file for HAProxy (default: `/etc/sysctl.d/z0-haproxy.conf`)
+
+- **`haproxy_logrotate_file`**: Name of automatically generated logrotate file for HAProxy (default: `/etc/logrotate.d/haproxy`)
+
+- **`haproxy_rsyslog_file`**: Name of automatically generated rsyslog file for HAProxy (default: `/etc/rsyslog.d/haproxy.conf`)
+
 - **`haproxy_extra_global_vars`**: A list of extra global variables to add to the global configuration section inside `haproxy.cfg` (default: `[]`).
 
 - **`haproxy_bind_options`**: Argument to ssl-default-bind-options in the global configuration section (default: `no-sslv3 no-tls-tickets`)

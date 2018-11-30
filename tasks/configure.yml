@@ -42,15 +42,28 @@
   tags:
   - configure
 
-- name: Open firewall for web traffic
+- name: Find out HAProxy bind ports that need to be open for firewalld
+  set_fact:
+    haproxy_tcp_ports: '{{ haproxy_frontends | map(attribute="binds") | flatten | map("regex_replace", "^.*:(.*)$", "\1") | list | unique}}'
+  tags:
+  - configure
+
+- name: Configure HAProxy service for firewalld
+  template:
+    src: haproxy-firewalld.j2
+    dest: {{ haproxy_firewalld_file }}
+    mode: 0644
+  validate: firewall-offline-cmd --new-service-from-file={{ haproxy_firewalld_file }} --name={{ haproxy_firewalld_name }}
+  notify: restart firewalld
+  tags:
+  - configure
+
+- name: Open firewall for incoming HAProxy traffic
   firewalld:
-    service: '{{ item }}'
+    service: haproxy
     permanent: yes
     immediate: yes
     state: enabled
-  with_items:
-  - http
-  - https
   tags:
   - configure
 
