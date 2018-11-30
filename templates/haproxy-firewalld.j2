@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+{{ ansible_managed | comment }}
+-->
+<service>
+  <short>TCP/HTTP proxy and load balancer for high availability (HAProxy)</short>
+  <description>HAProxy is a TCP/HTTP reverse proxy which is particularly suite for high availability environments.</description>
+{% for port in haproxy_tcp_ports %}
+  <port protocol="tcp" port="{{ port }}"/>
+{% endfor %}
+</service>

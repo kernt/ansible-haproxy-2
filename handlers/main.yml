@@ -1,10 +1,13 @@
 ---
 
-- name: Restart HAProxy
+- name: restart haproxy
   service: name=haproxy state=restarted
 
-- name: Restart Rsyslog
+- name: restart rsyslog
   service: name=rsyslog state=restarted
 
-- name: Restart Keepalived
+- name: restart keepalived
   service: name=keepalived state=restarted
+
+- name: reload firewalld
+  service: name=firewalld state=reloaded
