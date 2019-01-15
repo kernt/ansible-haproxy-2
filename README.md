@@ -169,6 +169,13 @@ require {
 allow keepalived_t self:capability setgid;
 allow keepalived_t self:capability setuid;
 ```
+
+```bash
+> checkmodule -M -m -o my-keepalived.mod my-keepalived.te
+> semodule_package -o my-keepalived.pp -m my-keepalived.mod
+> sudo semodule -i my-keepalived.pp
+```
+
 ## License
 
 MIT
