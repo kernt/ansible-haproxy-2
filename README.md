@@ -142,6 +142,9 @@ haproxy_keepalived_vrrps:
   vips:	    			# List of VIPs and their netmasks and options
   - address: 192.168.0.1
     mask: 32
+  peers:			# You can include also node's own address. It will be skipped in actual definition.
+  - 192.168.0.2			# This is helpful when using active-passive configurations and shared group_vars
+  - 192.168.0.3			# definitions with BACKUP state for all nodes (default).
 ```
 
 ## Usage
