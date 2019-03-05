@@ -35,7 +35,12 @@
 
 - name: Find out HAProxy bind ports that need to be open for firewalld
   set_fact:
-    haproxy_tcp_ports: '{{ haproxy_frontends | map(attribute="binds") | flatten | map("regex_replace", "^.*:(.*)$", "\1") | list | unique}}'
+    haproxy_tcp_ports: '{{ haproxy_frontends | map(attribute="binds") | flatten | map("regex_replace", "^.*:([0-9]+)(.*)$", "\1") | list | unique}}'
+  tags:
+  - configure
+
+- debug:
+    var: haproxy_tcp_ports
   tags:
   - configure
 
